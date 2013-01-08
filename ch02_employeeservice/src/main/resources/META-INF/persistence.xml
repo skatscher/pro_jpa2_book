@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="EmployeeService" transaction-type="RESOURCE_LOCAL">
+    <class>com.apress.projpa2.ch02.employeeservice.Employee</class>
+    <properties>
+      <property name="eclipselink.targer-database" value="DERBY"/>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:EmpServDB;create=true" />
+      <property name="javax.persistence.jdbc.user" value="APP" />
+      <property name="javax.persistence.jdbc.password" value="APP" />
+    </properties>
+  </persistence-unit>
+</persistence>
