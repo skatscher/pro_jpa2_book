@@ -5,10 +5,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-/**
- * Hello world!
- *
- */
 public class EmployeeService {
 
     protected EntityManager em;
