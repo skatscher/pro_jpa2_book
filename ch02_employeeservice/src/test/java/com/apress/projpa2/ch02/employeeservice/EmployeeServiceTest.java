@@ -58,7 +58,7 @@ public class EmployeeServiceTest {
     @Test
     public void testFindAllEmployees() {
         Employee employee = service.createEmployee(12, "Bob", 11000);
-        List<Employee> allEmployees = service.findAllEmployees();
+        List<Employee> allEmployees = service.findAllEmployees(); // FIXME JPQL Query finds nothing without commit
         Assert.assertEquals("Should find the expected number of employees", 2, allEmployees.size());
         Assert.assertTrue("Should find the expected employee", allEmployees.contains(testEmployee));
         Assert.assertTrue("Should find the expected employee", allEmployees.contains(employee));
