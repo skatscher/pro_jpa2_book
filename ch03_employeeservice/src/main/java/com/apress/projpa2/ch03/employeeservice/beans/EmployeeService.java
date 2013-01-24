@@ -2,6 +2,8 @@ package com.apress.projpa2.ch03.employeeservice.beans;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import com.apress.projpa2.ch03.employeeservice.model.Employee;
 
 public interface EmployeeService {
@@ -11,5 +13,6 @@ public interface EmployeeService {
     public Employee changeEmployeeSalary(int id, long newSalary);
     public Employee findEmployee(int id);
     public List<Employee> findAllEmployees();
+    public EntityManager getEntityManager();
 
 }
