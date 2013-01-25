@@ -1,6 +1,7 @@
 package com.apress.projpa2.ch03.employeeservice;
 
-import javax.annotation.PostConstruct;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.transaction.UserTransaction;
 
@@ -27,87 +28,72 @@ import com.apress.projpa2.ch03.employeeservice.model.Employee;
 @RunWith(Arquillian.class)
 public class EmployeeServiceTest {
 
-	@Deployment
-	public static Archive<?> createTestArchive() {
-		return ShrinkWrap
-				.create(WebArchive.class, "employeeServiceTest.war")
-				.addPackages(true, "com.apress")
-				.addAsResource("META-INF/persistence.xml",
-						"META-INF/persistence.xml")
-				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-	}
+    @Deployment
+    public static Archive<?> createTestArchive() {
+        return ShrinkWrap.create(WebArchive.class, "employeeServiceTest.war").addPackages(true, "com.apress")
+                .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+    }
 
-	@Inject
-	protected Logger log;
+    @Inject
+    protected Logger log;
 
-	@Inject
-	protected EmployeeService service;
+    @Inject
+    protected EmployeeService service;
 
-	@Inject
-	UserTransaction tx;
+    @Inject
+    UserTransaction tx;
 
-	protected Employee testEmployee;
+    @Test
+    public void testCreateEmployee() throws Exception {
+        tx.begin();
+        Assert.assertNull(service.findEmployee(11));
+        Employee employee = service.createEmployee(11, "Alice Smith", 10000);
+        log.info("New {} created", employee);
+        Assert.assertTrue("Employee should be created", service.getEntityManager().contains(employee));
+        tx.rollback();
+    }
 
-	@PostConstruct
-	public void postConstruct() {
-		testEmployee = service.createEmployee(10, "John Doe", 10000);
-		log.info("created employee : {}", testEmployee);
-	}
+    @Test
+    public void testRemoveEmployee() throws Exception {
+        tx.begin();
+        Employee employee = service.createEmployee(12, "Tim Tango", 9000);
+        log.info("Removing {}", employee);
+        service.removeEmployee(employee.getId());
+        Assert.assertFalse("Employee should be removed", service.getEntityManager().contains(employee));
+        tx.rollback();
+    }
 
-	@Test
-	public void testCreateEmployee() throws Exception {
-		Assert.assertTrue(true);
-		tx.begin();
-		Employee employee = service.createEmployee(11, "Alice Smith", 10000);
-		log.info("created employee : {}", employee);
-		Assert.assertTrue("Employee should be created", service
-				.getEntityManager().contains(employee));
-		tx.commit();
-	}
+    @Test
+    public void testFindEmployee() throws Exception {
+        tx.begin();
+        Employee employee = service.createEmployee(13, "Sally Thunder", 13000);
+        Employee employee2 = service.findEmployee(employee.getId());
+        Assert.assertNotNull(employee2);
+        Assert.assertEquals("Should find the expected employee", employee, employee2);
+        tx.rollback();
+    }
 
-	@Test
-	public void testRemoveEmployee() throws Exception {
-		tx.begin();
-		testEmployee = service.findEmployee(10);
-		log.info("removing employee : {}", testEmployee);
-		service.removeEmployee(testEmployee.getId());
-		tx.commit();
-		tx.begin();
-		Assert.assertFalse("Employee should be removed", service
-				.getEntityManager().contains(testEmployee));
-		tx.commit();
-	}
+    @Test
+    public void testFindAllEmployees() throws Exception {
+        tx.begin();
+        Employee employee1 = service.createEmployee(14, "Bob Hope", 17000);
+        Employee employee2 = service.createEmployee(15, "Daniel Sinclair", 14000);
+        List<Employee> allEmployees = service.findAllEmployees();
+        Assert.assertEquals("Should find the expected number of employees", 2, allEmployees.size());
+        Assert.assertTrue("Should find the expected employee", allEmployees.contains(employee1));
+        Assert.assertTrue("Should find the expected employee", allEmployees.contains(employee2));
+        tx.rollback();
+    }
 
-	// @Test
-	public void testFindEmployee() {
-		Employee employee = service.findEmployee(testEmployee.getId());
-		Assert.assertNotNull(employee);
-		// Assert.assertEquals("Should find the expected employee",
-		// testEmployee,
-		// employee);
-	}
-
-	// @Test
-	public void testFindAllEmployees() {
-		// Employee employee = service.createEmployee(12, "Bob", 11000);
-		// List<Employee> allEmployees = service.findAllEmployees();
-		// Assert.assertEquals("Should find the expected number of employees",
-		// 2,
-		// allEmployees.size());
-		// Assert.assertTrue("Should find the expected employee",
-		// allEmployees.contains(testEmployee));
-		// Assert.assertTrue("Should find the expected employee",
-		// allEmployees.contains(employee));
-	}
-
-	// @Test
-	public void testRaiseEmployeeSalary() {
-		// long raise = 1000L;
-		// long old_salary = testEmployee.getSalary();
-		// Employee employee =
-		// service.changeEmployeeSalary(testEmployee.getId(),
-		// raise);
-		// Assert.assertEquals(old_salary + raise, employee.getSalary());
-	}
+    @Test
+    public void testChangeEmployeeSalary() throws Exception {
+        tx.begin();
+        Employee employee = service.createEmployee(16, "Mario Mirelli", 18000);
+        long new_salary = 18500;
+        employee = service.changeEmployeeSalary(employee.getId(), new_salary);
+        Assert.assertEquals(new_salary, employee.getSalary());
+        tx.rollback();
+    }
 
 }
