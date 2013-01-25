@@ -11,3 +11,4 @@ bin
 .pmd
 *.jsfdia
 *.factorypath
+*.log
